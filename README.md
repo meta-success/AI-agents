@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nexus Agent — Smart AI Agent Dashboard
 
-## Getting Started
+Multimodal AI agent dashboard built with **Next.js**, **TypeScript**, **Tailwind CSS**, **shadcn/ui**, **OpenAI gpt-4o**, **GraphQL**, and a multi-step analysis workflow.
 
-First, run the development server:
+## Features
+
+- Dark-theme dashboard UI (React + TypeScript)
+- `/api/agent` REST endpoint backed by OpenAI
+- GraphQL RAG enrichment via `graphql-request`
+- 3-step workflow: sanitize → retrieve + analyze → format
+- Prompt-engineered multimodal system prompt
+- Optional image upload for vision analysis
+
+## Setup
 
 ```bash
+npm install
+cp .env.example .env.local
+# Add your OPENAI_API_KEY to .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy (Vercel)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Push this repo to GitHub.
+2. Import the project on [vercel.com](https://vercel.com).
+3. Set environment variable `OPENAI_API_KEY`.
+4. Deploy.
 
-## Learn More
+## Skills demonstrated
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Skill | Implementation |
+| --- | --- |
+| React / TypeScript | `src/app/page.tsx` dashboard |
+| Generative AI | OpenAI `gpt-4o` (text + image) |
+| AI Agents | Autonomous analysis agent via `/api/agent` |
+| AI Integration & APIs | Custom Next.js route handler |
+| GraphQL | `src/lib/graphql.ts` + RAG retrieval |
+| Workflow Automation | `src/lib/workflow.ts` |
+| Prompt Engineering | `src/lib/prompts.ts` |
+| MLOps & Deployment | Vercel-ready production app |
+| RAG Systems | User input + GraphQL context passed to the model |
