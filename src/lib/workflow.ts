@@ -1,5 +1,5 @@
 import { retrieveRagContext } from "@/lib/graphql";
-import { getOpenAI } from "@/lib/openai-client";
+import { getOpenAI, resolveModel } from "@/lib/openai-client";
 import { SYSTEM_PROMPT } from "@/lib/prompts";
 import type OpenAI from "openai";
 
@@ -43,7 +43,7 @@ function sanitizeInput(text: string, question: string) {
 async function runSafetyCheck(client: OpenAI, content: string) {
   try {
     const moderation = await client.moderations.create({
-      model: "omni-moderation-latest",
+      model: resolveModel("moderation"),
       input: content.slice(0, 8000),
     });
     const result = moderation.results[0];
@@ -100,7 +100,7 @@ async function callOpenAI(
   }
 
   const completion = await client.chat.completions.create({
-    model: "gpt-4o",
+    model: resolveModel("gpt-4o"),
     temperature: 0.3,
     max_tokens: 900,
     messages: [
@@ -174,7 +174,7 @@ export async function runAnalysisWorkflow(input: WorkflowInput): Promise<Workflo
     steps: {
       sanitize: "Input sanitized and length-capped",
       ragContext,
-      model: "gpt-4o",
+      model: resolveModel("gpt-4o"),
       safety: safety.note,
       format: "Markdown normalized for dashboard display",
     },

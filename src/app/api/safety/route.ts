@@ -1,4 +1,4 @@
-import { chatText, getOpenAI, jsonError } from "@/lib/openai-client";
+import { chatText, getOpenAI, jsonError, resolveModel } from "@/lib/openai-client";
 import { SAFETY_PROMPT } from "@/lib/prompts";
 
 export const runtime = "nodejs";
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
 
     const client = getOpenAI();
     const moderation = await client.moderations.create({
-      model: "omni-moderation-latest",
+      model: resolveModel("moderation"),
       input: text.slice(0, 8000),
     });
 

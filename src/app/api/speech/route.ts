@@ -1,4 +1,4 @@
-import { getOpenAI, jsonError } from "@/lib/openai-client";
+import { getOpenAI, jsonError, resolveModel } from "@/lib/openai-client";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     if (body.mode === "speak") {
       if (!body.text?.trim()) return jsonError("text is required for TTS", 400);
       const speech = await client.audio.speech.create({
-        model: "tts-1",
+        model: resolveModel("tts-1"),
         voice: (body.voice as "alloy") || "alloy",
         input: body.text.slice(0, 2000),
       });
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
     const transcription = await client.audio.transcriptions.create({
       file,
-      model: "whisper-1",
+      model: resolveModel("whisper-1"),
     });
 
     return Response.json({

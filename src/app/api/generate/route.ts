@@ -1,4 +1,4 @@
-import { getOpenAI, jsonError } from "@/lib/openai-client";
+import { getOpenAI, jsonError, resolveModel } from "@/lib/openai-client";
 
 export const runtime = "nodejs";
 export const maxDuration = 90;
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
 
     const client = getOpenAI();
     const result = await client.images.generate({
-      model: "dall-e-3",
+      model: resolveModel("dall-e-3"),
       prompt: prompt.slice(0, 3000),
       size: size || "1024x1024",
       n: 1,

@@ -1,4 +1,4 @@
-import { getOpenAI, jsonError } from "@/lib/openai-client";
+import { getOpenAI, jsonError, resolveModel } from "@/lib/openai-client";
 import { CHAT_PROMPT } from "@/lib/prompts";
 
 export const runtime = "nodejs";
@@ -12,7 +12,7 @@ export async function POST(request: Request) {
 
     const client = getOpenAI();
     const completion = await client.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: resolveModel("gpt-4o-mini"),
       temperature: 0.5,
       max_tokens: 500,
       messages: [{ role: "system", content: CHAT_PROMPT }, ...messages],

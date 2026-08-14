@@ -61,7 +61,12 @@ export async function POST(request: Request) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unexpected server error";
-    const status = message.includes("OPENAI_API_KEY") ? 503 : 500;
+    const status =
+      message.includes("API key") ||
+      message.includes("OPENAI_API_KEY") ||
+      message.includes("OPENROUTER_API_KEY")
+        ? 503
+        : 500;
     return NextResponse.json({ success: false, error: message }, { status });
   }
 }
