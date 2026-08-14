@@ -1,44 +1,46 @@
-# Nexus Agent — Smart AI Agent Dashboard
+# Nexus Agent — AI Skill Workbench
 
-Multimodal AI agent dashboard built with **Next.js**, **TypeScript**, **Tailwind CSS**, **shadcn/ui**, **OpenAI gpt-4o**, **GraphQL**, and a multi-step analysis workflow.
+Production-ready Next.js dashboard that proves **20/20 Rework AI skills** (≥80% required) in one deployable SaaS app.
 
-## Features
-
-- Dark-theme dashboard UI (React + TypeScript)
-- `/api/agent` REST endpoint backed by OpenAI
-- GraphQL RAG enrichment via `graphql-request`
-- 3-step workflow: sanitize → retrieve + analyze → format
-- Prompt-engineered multimodal system prompt
-- Optional image upload for vision analysis
-
-## Setup
+## Quick start
 
 ```bash
 npm install
 cp .env.example .env.local
-# Add your OPENAI_API_KEY to .env.local
+# set OPENAI_API_KEY
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+## Skill coverage (20/20)
 
-## Deploy (Vercel)
-
-1. Push this repo to GitHub.
-2. Import the project on [vercel.com](https://vercel.com).
-3. Set environment variable `OPENAI_API_KEY`.
-4. Deploy.
-
-## Skills demonstrated
-
-| Skill | Implementation |
+| Skill | Where to prove it |
 | --- | --- |
-| React / TypeScript | `src/app/page.tsx` dashboard |
-| Generative AI | OpenAI `gpt-4o` (text + image) |
-| AI Agents | Autonomous analysis agent via `/api/agent` |
-| AI Integration & APIs | Custom Next.js route handler |
-| GraphQL | `src/lib/graphql.ts` + RAG retrieval |
-| Workflow Automation | `src/lib/workflow.ts` |
-| Prompt Engineering | `src/lib/prompts.ts` |
-| MLOps & Deployment | Vercel-ready production app |
-| RAG Systems | User input + GraphQL context passed to the model |
+| Natural Language Processing | **NLP** studio |
+| Computer Vision | **Vision** studio |
+| Audio & Speech | **Speech** studio (Whisper + TTS) |
+| Multimodal AI | **Agent** studio (text + image) |
+| AI Agents & Assistants | **Agent** studio |
+| RAG Systems | Agent GraphQL RAG + **Docs** chunks |
+| MLOps & Deployment | Health badge + Vercel deploy |
+| Prompt Engineering | Editable system prompt in Agent |
+| Data Annotation & Labeling | **Annotate** studio |
+| RLHF & Alignment | **Align** + thumbs on Agent output |
+| Model Fine-tuning | **Fine-tune** JSONL export |
+| Workflow Automation | sanitize → RAG → model → safety → format |
+| Document AI & Extraction | **Docs** studio |
+| Predictive Analytics | **Predict** studio |
+| AI Integration & APIs | `/api/*` route handlers |
+| Generative AI (Image/Video/Audio) | **Generate** + TTS |
+| Edge AI / On-device ML | **Edge** browser classifier |
+| Conversational AI / Chatbots | **Chat** studio |
+| Recommendation Systems | Agent recommendations + `/api/recommend` |
+| AI Safety & Red Teaming | **Safety** studio |
+
+Open the **Skills** tab in the app for a live coverage map.
+
+## Deploy
+
+1. Push to GitHub
+2. Import on Vercel
+3. Set `OPENAI_API_KEY`
+4. Deploy and submit the live URL to Rework

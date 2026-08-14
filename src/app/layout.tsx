@@ -14,9 +14,9 @@ const sans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Nexus Agent | Smart AI Agent Dashboard",
+  title: "Nexus Agent | AI Skill Workbench",
   description:
-    "Multimodal AI agent dashboard with GraphQL RAG, workflow automation, and OpenAI gpt-4o.",
+    "Production AI dashboard covering NLP, vision, speech, RAG, agents, RLHF, fine-tuning, safety, and more.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
