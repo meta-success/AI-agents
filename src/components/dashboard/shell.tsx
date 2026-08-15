@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   Activity,
+  BookOpen,
   Bot,
   Eye,
   FileText,
@@ -41,6 +42,7 @@ import { FinetuneStudio } from "@/components/studios/finetune-studio";
 import { SafetyStudio } from "@/components/studios/safety-studio";
 import { EdgeStudio } from "@/components/studios/edge-studio";
 import { SkillsStudio } from "@/components/studios/skills-studio";
+import { GuideStudio } from "@/components/studios/guide-studio";
 
 const STUDIO_ICONS: Record<StudioId, LucideIcon> = {
   agent: Bot,
@@ -57,18 +59,20 @@ const STUDIO_ICONS: Record<StudioId, LucideIcon> = {
   safety: Shield,
   edge: Cpu,
   skills: LayoutGrid,
+  guide: BookOpen,
 };
 
 const GROUPS: { id: Studio["group"]; label: string }[] = [
   { id: "core", label: "Core AI" },
   { id: "create", label: "Create & Analyze" },
   { id: "train", label: "Train & Align" },
+  { id: "map", label: "Help" },
 ];
 
 type Studio = (typeof STUDIOS)[number];
 
 export function DashboardApp() {
-  const [studio, setStudio] = useState<StudioId>("agent");
+  const [studio, setStudio] = useState<StudioId>("guide");
   const [mobileNav, setMobileNav] = useState(false);
   const [health, setHealth] = useState<"checking" | "ok" | "down">("checking");
 
@@ -211,6 +215,30 @@ export function DashboardApp() {
           <button
             type="button"
             onClick={() => {
+              setStudio("guide");
+              setMobileNav(false);
+            }}
+            className={cn(
+              "relative w-full overflow-hidden rounded-2xl border p-3 text-left transition-all duration-300",
+              studio === "guide"
+                ? "border-cyan-300/40 bg-cyan-400/10 shadow-[0_0_28px_rgba(34,211,238,0.2)]"
+                : "border-white/10 bg-gradient-to-br from-white/[0.05] to-cyan-400/[0.04] hover:border-cyan-300/30"
+            )}
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-cyan-400/15 text-cyan-200 ring-1 ring-cyan-300/30">
+                <BookOpen className="size-4" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-white">Test Guide</p>
+                <p className="text-[11px] text-zinc-500">Examples · expected outputs</p>
+              </div>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
               setStudio("skills");
               setMobileNav(false);
             }}
@@ -318,6 +346,7 @@ export function DashboardApp() {
             {studio === "safety" && <SafetyStudio />}
             {studio === "edge" && <EdgeStudio />}
             {studio === "skills" && <SkillsStudio onOpen={setStudio} />}
+            {studio === "guide" && <GuideStudio onOpen={setStudio} />}
           </div>
         </main>
       </div>

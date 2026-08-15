@@ -144,7 +144,8 @@ export type StudioId =
   | "finetune"
   | "safety"
   | "edge"
-  | "skills";
+  | "skills"
+  | "guide";
 
 export type Studio = {
   id: StudioId;
@@ -250,6 +251,13 @@ export const STUDIOS: Studio[] = [
     id: "skills",
     label: "Skills",
     description: "Coverage map",
+    skills: [],
+    group: "map",
+  },
+  {
+    id: "guide",
+    label: "Guide",
+    description: "Purpose & step tests",
     skills: [],
     group: "map",
   },
