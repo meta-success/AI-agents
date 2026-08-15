@@ -333,7 +333,7 @@ export function AgentStudio() {
             <EmptyState label="Results will appear here after you run Analyze." />
           ) : null}
           {loading ? (
-            <LoadingBlock label="sanitize → RAG + NLP + Docs → agent → safety" />
+            <LoadingBlock label="Fast pipeline: RAG + NLP/Docs → agent…" />
           ) : null}
           {result?.success === false ? (
             <ErrorBox message={result.error || "Request failed"} />

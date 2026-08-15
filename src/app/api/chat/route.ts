@@ -13,8 +13,8 @@ export async function POST(request: Request) {
     const client = getOpenAI();
     const completion = await client.chat.completions.create({
       model: resolveModel("gpt-4o-mini"),
-      temperature: 0.5,
-      max_tokens: 500,
+      temperature: 0.4,
+      max_tokens: 280,
       messages: [{ role: "system", content: CHAT_PROMPT }, ...messages],
     });
 

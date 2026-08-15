@@ -1,10 +1,6 @@
 import { retrieveRagContext } from "@/lib/graphql";
 import { chatText, getOpenAI, resolveModel } from "@/lib/openai-client";
-import {
-  DOCUMENT_PROMPT,
-  NLP_PROMPT,
-  SYSTEM_PROMPT,
-} from "@/lib/prompts";
+import { SYSTEM_PROMPT } from "@/lib/prompts";
 import type OpenAI from "openai";
 
 export type WorkflowInput = {
@@ -54,16 +50,36 @@ export type WorkflowResult = {
   };
 };
 
+const PREANALYSIS_PROMPT = `You are a fast NLP + Document AI extractor.
+Return ONLY valid JSON:
+{
+  "nlp": {
+    "sentiment": "positive|neutral|negative",
+    "sentimentConfidence": 0-1,
+    "entities": [{"text":"","type":"PERSON|ORG|LOC|PRODUCT|DATE|OTHER"}],
+    "keywords": ["..."],
+    "summary": "one sentence"
+  },
+  "document": {
+    "title": "",
+    "summary": "",
+    "entities": [{"label":"","value":""}],
+    "actionItems": ["..."],
+    "dates": ["..."]
+  }
+}
+Keep arrays short (max 6 items each). Be concise.`;
+
 function sanitizeInput(text: string, question: string) {
   const clean = (value: string) =>
     value
       .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "")
       .trim()
-      .slice(0, 12_000);
+      .slice(0, 6_000);
 
   return {
     text: clean(text),
-    question: clean(question),
+    question: clean(question).slice(0, 500),
   };
 }
 
@@ -82,7 +98,7 @@ async function runSafetyCheck(client: OpenAI, content: string) {
   try {
     const moderation = await client.moderations.create({
       model: resolveModel("moderation"),
-      input: content.slice(0, 8000),
+      input: content.slice(0, 4000),
     });
     const result = moderation.results[0];
     const categories = Object.entries(result?.categories ?? {})
@@ -104,31 +120,25 @@ async function runSafetyCheck(client: OpenAI, content: string) {
   }
 }
 
-async function runNlp(text: string): Promise<NlpBundle | null> {
-  if (!text.trim()) return null;
+/** One mini call for NLP + Document AI (was two sequential/parallel LLM calls). */
+async function runPreAnalysis(text: string): Promise<{
+  nlp: NlpBundle | null;
+  document: DocBundle | null;
+}> {
+  if (!text.trim()) return { nlp: null, document: null };
   try {
-    const raw = await chatText(NLP_PROMPT, text.slice(0, 6000), {
+    const raw = await chatText(PREANALYSIS_PROMPT, text.slice(0, 3500), {
       model: "gpt-4o-mini",
-      temperature: 0.1,
-      maxTokens: 500,
+      temperature: 0,
+      maxTokens: 450,
     });
-    return parseJsonObject<NlpBundle>(raw);
+    const parsed = parseJsonObject<{ nlp?: NlpBundle; document?: DocBundle }>(raw);
+    return {
+      nlp: parsed?.nlp ?? null,
+      document: text.trim().length >= 40 ? parsed?.document ?? null : null,
+    };
   } catch {
-    return null;
-  }
-}
-
-async function runDocumentExtract(text: string): Promise<DocBundle | null> {
-  if (!text.trim() || text.trim().length < 40) return null;
-  try {
-    const raw = await chatText(DOCUMENT_PROMPT, text.slice(0, 8000), {
-      model: "gpt-4o-mini",
-      temperature: 0.1,
-      maxTokens: 600,
-    });
-    return parseJsonObject<DocBundle>(raw);
-  } catch {
-    return null;
+    return { nlp: null, document: null };
   }
 }
 
@@ -143,23 +153,25 @@ async function callOpenAI(
   imageBase64?: string,
   imageMimeType?: string
 ) {
+  const visionUsed = Boolean(imageBase64 && imageMimeType);
+  // Vision needs gpt-4o; text-only uses mini for speed
+  const modelAlias = visionUsed ? "gpt-4o" : "gpt-4o-mini";
+
   const userText = [
-    "## INPUT DATA (RAG context from the user)",
-    text || "(no text provided)",
+    "## INPUT DATA",
+    text || "(no text)",
     "",
-    "## RETRIEVED CONTEXT (GraphQL)",
+    "## RAG CONTEXT",
     ragContext,
     "",
-    "## NLP PRE-ANALYSIS",
-    nlp ? JSON.stringify(nlp, null, 2) : "(skipped — no text)",
+    "## NLP",
+    nlp ? JSON.stringify(nlp) : "(none)",
     "",
-    "## DOCUMENT EXTRACTION",
-    document ? JSON.stringify(document, null, 2) : "(skipped)",
+    "## DOCUMENT AI",
+    document ? JSON.stringify(document) : "(none)",
     "",
     "## QUESTION",
     question,
-    "",
-    "Use the NLP + document extraction above as supporting evidence. If an image is attached, include visual findings.",
   ].join("\n");
 
   const userContent: OpenAI.Chat.Completions.ChatCompletionContentPart[] = [
@@ -171,14 +183,15 @@ async function callOpenAI(
       type: "image_url",
       image_url: {
         url: `data:${imageMimeType};base64,${imageBase64}`,
+        detail: "low",
       },
     });
   }
 
   const completion = await client.chat.completions.create({
-    model: resolveModel("gpt-4o"),
-    temperature: 0.3,
-    max_tokens: 1000,
+    model: resolveModel(modelAlias),
+    temperature: 0.2,
+    max_tokens: visionUsed ? 700 : 550,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userContent },
@@ -187,7 +200,7 @@ async function callOpenAI(
 
   const answer = completion.choices[0]?.message?.content?.trim();
   if (!answer) throw new Error("The model returned an empty response.");
-  return answer;
+  return { answer, model: resolveModel(modelAlias) };
 }
 
 function formatOutput(raw: string) {
@@ -222,8 +235,8 @@ function buildRecommendations(
 }
 
 /**
- * Unified analysis workflow:
- * sanitize → (RAG + NLP + Document AI in parallel) → multimodal agent → safety → format
+ * Fast unified workflow:
+ * sanitize → (RAG + pre-analysis + input safety in parallel) → agent → format
  */
 export async function runAnalysisWorkflow(input: WorkflowInput): Promise<WorkflowResult> {
   const sanitized = sanitizeInput(input.text, input.question);
@@ -237,13 +250,15 @@ export async function runAnalysisWorkflow(input: WorkflowInput): Promise<Workflo
   const systemPrompt = input.systemPrompt?.trim() || SYSTEM_PROMPT;
   const visionUsed = Boolean(input.imageBase64 && input.imageMimeType);
 
-  const [ragContext, nlp, document] = await Promise.all([
+  const [ragContext, pre, inputSafety] = await Promise.all([
     retrieveRagContext(sanitized.text, sanitized.question),
-    runNlp(sanitized.text),
-    runDocumentExtract(sanitized.text),
+    runPreAnalysis(sanitized.text),
+    runSafetyCheck(client, `${sanitized.text}\n${sanitized.question}`),
   ]);
 
-  const rawAnswer = await callOpenAI(
+  const { nlp, document } = pre;
+
+  const { answer: rawAnswer, model } = await callOpenAI(
     client,
     sanitized.text,
     sanitized.question,
@@ -255,16 +270,12 @@ export async function runAnalysisWorkflow(input: WorkflowInput): Promise<Workflo
     input.imageMimeType
   );
 
-  const safety = await runSafetyCheck(
-    client,
-    `${sanitized.text}\n${sanitized.question}\n${rawAnswer}`
-  );
   const answer = formatOutput(rawAnswer);
   const recommendations = buildRecommendations(
     sanitized.question,
     visionUsed,
     nlp,
-    safety.flagged
+    inputSafety.flagged
   );
 
   const suggestedLabel =
@@ -278,22 +289,22 @@ export async function runAnalysisWorkflow(input: WorkflowInput): Promise<Workflo
     answer,
     recommendations,
     safety: {
-      flagged: safety.flagged,
-      categories: safety.categories,
-      note: safety.note,
+      flagged: inputSafety.flagged,
+      categories: inputSafety.categories,
+      note: inputSafety.note,
     },
     nlp,
     document,
     visionUsed,
     suggestedLabel,
     steps: {
-      sanitize: "Input sanitized and length-capped",
+      sanitize: "Input sanitized (fast path)",
       ragContext,
-      model: resolveModel("gpt-4o"),
+      model,
       nlp: nlp ? `Sentiment ${nlp.sentiment}` : "NLP skipped",
       document: document ? `Extracted: ${document.title || "untitled"}` : "Document AI skipped",
-      safety: safety.note,
-      format: "Markdown normalized for dashboard display",
+      safety: inputSafety.note,
+      format: "Markdown normalized",
     },
   };
 }

@@ -13,7 +13,12 @@ export async function fetchGraphQLData<T = unknown>(
   variables?: GraphQLVariables,
   endpoint = process.env.GRAPHQL_ENDPOINT || DEFAULT_ENDPOINT
 ): Promise<T> {
-  return request<T>(endpoint, query, variables);
+  return Promise.race([
+    request<T>(endpoint, query, variables),
+    new Promise<T>((_, reject) => {
+      setTimeout(() => reject(new Error("GraphQL timeout")), 2500);
+    }),
+  ]);
 }
 
 /** Sample query used to enrich analysis with structured world knowledge. */

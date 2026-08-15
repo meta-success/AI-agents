@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const completion = await client.chat.completions.create({
       model: resolveModel("gpt-4o"),
       temperature: 0.2,
-      max_tokens: 900,
+      max_tokens: 500,
       messages: [
         { role: "system", content: VISION_PROMPT },
         {
@@ -34,6 +34,7 @@ export async function POST(request: Request) {
               type: "image_url",
               image_url: {
                 url: `data:${body.imageMimeType};base64,${body.imageBase64}`,
+                detail: "low",
               },
             },
           ],

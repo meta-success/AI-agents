@@ -104,9 +104,9 @@ export async function chatText(
 ) {
   const client = getOpenAI();
   const completion = await client.chat.completions.create({
-    model: resolveModel(options?.model ?? "gpt-4o"),
+    model: resolveModel(options?.model ?? "gpt-4o-mini"),
     temperature: options?.temperature ?? 0.3,
-    max_tokens: options?.maxTokens ?? 900,
+    max_tokens: options?.maxTokens ?? 600,
     messages: [
       { role: "system", content: system },
       { role: "user", content: user },
