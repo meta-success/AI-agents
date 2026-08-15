@@ -72,7 +72,7 @@ export function GenerateStudio() {
     <div className="grid gap-6 lg:grid-cols-2">
       <Panel
         title="Generative Image"
-        description="Fast image generation optimized for speed (dall-e-2 @ 512)."
+        description="Fast image generation (tries gpt-image-1 first, then DALL·E fallbacks)."
         action={
           <Badge className="border-0 bg-cyan-400/15 text-cyan-100">
             <Zap className="size-3" />
