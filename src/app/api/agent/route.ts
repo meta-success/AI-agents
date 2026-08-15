@@ -3,7 +3,7 @@ import { formatApiError } from "@/lib/openai-client";
 import { runAnalysisWorkflow } from "@/lib/workflow";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 90;
 
 type AgentRequestBody = {
   text?: string;
@@ -27,14 +27,14 @@ export async function POST(request: Request) {
 
     if (!question.trim()) {
       return NextResponse.json(
-        { error: "Missing required field: question" },
+        { success: false, error: "Missing required field: question" },
         { status: 400 }
       );
     }
 
     if (!text.trim() && !imageBase64) {
       return NextResponse.json(
-        { error: "Provide text and/or an image to analyze." },
+        { success: false, error: "Provide text and/or an image to analyze." },
         { status: 400 }
       );
     }
@@ -52,9 +52,21 @@ export async function POST(request: Request) {
       answer: result.answer,
       recommendations: result.recommendations,
       safety: result.safety,
+      nlp: result.nlp,
+      document: result.document,
+      visionUsed: result.visionUsed,
+      suggestedLabel: result.suggestedLabel,
       meta: {
         model: result.steps.model,
-        workflow: ["sanitize", "graphql_rag", "openai", "safety", "format"],
+        workflow: [
+          "sanitize",
+          "graphql_rag",
+          "nlp",
+          "document_ai",
+          "multimodal_agent",
+          "safety",
+          "format",
+        ],
         ragContext: result.steps.ragContext,
         steps: result.steps,
       },
@@ -76,6 +88,15 @@ export async function GET() {
     mlops: {
       runtime: "nodejs",
       model: "gpt-4o",
+      pipeline: [
+        "sanitize",
+        "graphql_rag",
+        "nlp",
+        "document_ai",
+        "multimodal_agent",
+        "safety",
+        "format",
+      ],
       deployedAt: new Date().toISOString(),
     },
   });
