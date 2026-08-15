@@ -2,16 +2,28 @@ import OpenAI from "openai";
 
 export type AiProvider = "openai" | "openrouter";
 
+function isOpenRouterKey(key?: string) {
+  return Boolean(key?.startsWith("sk-or-"));
+}
+
+function isNativeOpenAIKey(key?: string) {
+  return Boolean(key && !isOpenRouterKey(key) && key.startsWith("sk-"));
+}
+
+/**
+ * Prefer native OpenAI when both keys exist.
+ * OpenRouter only when explicitly requested or it's the only key available.
+ */
 export function getAiProvider(): AiProvider {
   const explicit = process.env.AI_PROVIDER?.toLowerCase();
   if (explicit === "openrouter") return "openrouter";
   if (explicit === "openai") return "openai";
 
-  if (process.env.OPENROUTER_API_KEY) return "openrouter";
+  const openAiKey = process.env.OPENAI_API_KEY;
+  const openRouterKey = process.env.OPENROUTER_API_KEY;
 
-  const key = process.env.OPENAI_API_KEY || "";
-  if (key.startsWith("sk-or-")) return "openrouter";
-
+  if (isNativeOpenAIKey(openAiKey)) return "openai";
+  if (openRouterKey || isOpenRouterKey(openAiKey)) return "openrouter";
   return "openai";
 }
 
@@ -20,11 +32,11 @@ function getApiKey() {
   const key =
     provider === "openrouter"
       ? process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY
-      : process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY;
+      : process.env.OPENAI_API_KEY;
 
   if (!key) {
     throw new Error(
-      "Missing API key. Set OPENROUTER_API_KEY (recommended) or OPENAI_API_KEY in .env"
+      "Missing API key. Set OPENAI_API_KEY in .env (or OPENROUTER_API_KEY with AI_PROVIDER=openrouter)."
     );
   }
   return key;
@@ -106,14 +118,43 @@ export async function chatText(
   return content;
 }
 
+/** Turn SDK / provider errors into actionable messages. */
+export function formatApiError(error: unknown) {
+  const provider = getAiProvider();
+
+  if (error && typeof error === "object") {
+    const e = error as {
+      status?: number;
+      message?: string;
+      error?: { message?: string; code?: string };
+    };
+    const detail = e.error?.message || e.message || "Request failed";
+    const status = e.status;
+
+    if (status === 401 || /401|user not found|incorrect api key|invalid.*key/i.test(detail)) {
+      if (provider === "openrouter") {
+        return "OpenRouter auth failed (401). Your OpenRouter key is invalid or expired. Fix: use a valid OPENAI_API_KEY and set AI_PROVIDER=openai, or replace OPENROUTER_API_KEY.";
+      }
+      return "OpenAI auth failed (401). Check that OPENAI_API_KEY in .env is complete and valid, then restart the dev server.";
+    }
+
+    if (status === 429) {
+      return `Rate limit hit (${provider}). Wait a moment or check your plan/credits.`;
+    }
+
+    if (status) return `${provider} error ${status}: ${detail}`;
+    return detail;
+  }
+
+  return error instanceof Error ? error.message : "Unexpected API error";
+}
+
 export function jsonError(message: string, status = 500) {
   const missingKey =
-    message.includes("API key") ||
-    message.includes("OPENAI_API_KEY") ||
-    message.includes("OPENROUTER_API_KEY");
+    /API key|OPENAI_API_KEY|OPENROUTER_API_KEY|auth failed \(401\)/i.test(message);
 
   return Response.json(
-    { success: false, error: message },
+    { success: false, error: message, provider: getAiProvider() },
     { status: missingKey ? 503 : status }
   );
 }

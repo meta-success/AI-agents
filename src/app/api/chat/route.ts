@@ -1,4 +1,4 @@
-import { getOpenAI, jsonError, resolveModel } from "@/lib/openai-client";
+import { formatApiError, getOpenAI, jsonError, resolveModel } from "@/lib/openai-client";
 import { CHAT_PROMPT } from "@/lib/prompts";
 
 export const runtime = "nodejs";
@@ -27,6 +27,6 @@ export async function POST(request: Request) {
       skill: "Conversational AI / Chatbots",
     });
   } catch (error) {
-    return jsonError(error instanceof Error ? error.message : "Chat failed");
+    return jsonError(formatApiError(error));
   }
 }

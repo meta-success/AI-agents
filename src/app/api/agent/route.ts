@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { formatApiError } from "@/lib/openai-client";
 import { runAnalysisWorkflow } from "@/lib/workflow";
 
 export const runtime = "nodejs";
@@ -59,12 +60,9 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Unexpected server error";
+    const message = formatApiError(error);
     const status =
-      message.includes("API key") ||
-      message.includes("OPENAI_API_KEY") ||
-      message.includes("OPENROUTER_API_KEY")
+      /API key|auth failed \(401\)|OPENAI_API_KEY|OPENROUTER_API_KEY/i.test(message)
         ? 503
         : 500;
     return NextResponse.json({ success: false, error: message }, { status });
