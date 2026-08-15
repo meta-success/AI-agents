@@ -64,7 +64,7 @@ export function PredictStudio() {
           onChange={(e) => setCsv(e.target.value)}
           className="mb-4 min-h-48 border-white/10 bg-black/30 font-mono text-xs"
         />
-        <Button onClick={run} disabled={loading || !csv.trim()} className="bg-teal-400 text-zinc-950 hover:bg-teal-300">
+        <Button onClick={run} disabled={loading || !csv.trim()} className="bg-cyan-400 text-zinc-950 hover:bg-cyan-300">
           {loading ? <Loader2 className="size-4 animate-spin" /> : null}
           Forecast
         </Button>

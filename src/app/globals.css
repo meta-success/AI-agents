@@ -131,7 +131,7 @@
 
 @layer utilities {
   .animate-in {
-    animation: nexus-fade 280ms ease-out;
+    animation: nexus-fade 320ms ease-out;
   }
   .fade-in {
     animation-name: nexus-fade;
@@ -141,7 +141,7 @@
 @keyframes nexus-fade {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -149,8 +149,22 @@
   }
 }
 
+@keyframes nexus-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.nexus-glow-pulse {
+  animation: nexus-glow 3.2s ease-in-out infinite;
+}
+
 /* Smooth scrollbars in dark shell */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  scrollbar-color: rgba(34, 211, 238, 0.28) transparent;
 }

@@ -82,7 +82,7 @@ export function VisionStudio() {
         ) : null}
         <FieldLabel>Vision question</FieldLabel>
         <Input value={question} onChange={(e) => setQuestion(e.target.value)} className="mb-4 h-10 border-white/10 bg-black/30" />
-        <Button onClick={run} disabled={loading || !base64} className="bg-teal-400 text-zinc-950 hover:bg-teal-300">
+        <Button onClick={run} disabled={loading || !base64} className="bg-cyan-400 text-zinc-950 hover:bg-cyan-300">
           {loading ? <Loader2 className="size-4 animate-spin" /> : null}
           Analyze image
         </Button>

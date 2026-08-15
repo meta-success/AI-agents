@@ -151,6 +151,7 @@ export type Studio = {
   label: string;
   description: string;
   skills: SkillId[];
+  group: "core" | "create" | "train" | "map";
 };
 
 export const STUDIOS: Studio[] = [
@@ -159,83 +160,97 @@ export const STUDIOS: Studio[] = [
     label: "Agent",
     description: "Multimodal RAG agent",
     skills: ["agents", "multimodal", "rag", "workflow", "prompt-engineering", "ai-apis", "mlops"],
+    group: "core",
   },
   {
     id: "chat",
     label: "Chat",
     description: "Conversational assistant",
     skills: ["conversational", "nlp", "agents"],
+    group: "core",
   },
   {
     id: "nlp",
     label: "NLP",
     description: "Language understanding",
     skills: ["nlp", "prompt-engineering"],
+    group: "core",
   },
   {
     id: "vision",
     label: "Vision",
     description: "Computer vision lab",
     skills: ["computer-vision", "multimodal"],
+    group: "core",
   },
   {
     id: "speech",
     label: "Speech",
     description: "Audio & speech",
     skills: ["audio-speech", "generative"],
+    group: "create",
   },
   {
     id: "generate",
     label: "Generate",
     description: "Image generation",
     skills: ["generative", "prompt-engineering"],
+    group: "create",
   },
   {
     id: "document",
     label: "Docs",
     description: "Document AI",
     skills: ["document-ai", "rag", "nlp"],
+    group: "create",
   },
   {
     id: "predict",
     label: "Predict",
     description: "Forecasting",
     skills: ["predictive"],
+    group: "create",
   },
   {
     id: "annotate",
     label: "Annotate",
     description: "Labeling desk",
     skills: ["data-annotation"],
+    group: "train",
   },
   {
     id: "align",
     label: "Align",
     description: "RLHF feedback",
     skills: ["rlhf", "ai-safety"],
+    group: "train",
   },
   {
     id: "finetune",
     label: "Fine-tune",
     description: "Training export",
     skills: ["fine-tuning", "data-annotation", "rlhf"],
+    group: "train",
   },
   {
     id: "safety",
     label: "Safety",
     description: "Red teaming",
     skills: ["ai-safety", "rlhf"],
+    group: "train",
   },
   {
     id: "edge",
     label: "Edge",
     description: "On-device ML",
     skills: ["edge-ai"],
+    group: "train",
   },
   {
     id: "skills",
     label: "Skills",
     description: "Coverage map",
     skills: [],
+    group: "map",
   },
 ];

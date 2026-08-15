@@ -93,7 +93,7 @@ export function SpeechStudio() {
               Stop & transcribe
             </Button>
           )}
-          {loading ? <Loader2 className="size-5 animate-spin text-teal-300" /> : null}
+          {loading ? <Loader2 className="size-5 animate-spin text-cyan-300" /> : null}
         </div>
         {transcript ? <ResultBox>{transcript}</ResultBox> : null}
       </Panel>
@@ -104,7 +104,7 @@ export function SpeechStudio() {
           onChange={(e) => setTtsText(e.target.value)}
           className="mb-4 min-h-28 border-white/10 bg-black/30"
         />
-        <Button onClick={speak} disabled={loading || !ttsText.trim()} className="bg-teal-400 text-zinc-950 hover:bg-teal-300">
+        <Button onClick={speak} disabled={loading || !ttsText.trim()} className="bg-cyan-400 text-zinc-950 hover:bg-cyan-300">
           <Volume2 className="size-4" /> Generate speech
         </Button>
       </Panel>

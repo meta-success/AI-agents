@@ -101,14 +101,31 @@ export function AgentStudio() {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <h2 className="font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-          Analyze context. Ask anything.
-        </h2>
-        <p className="max-w-2xl text-sm leading-relaxed text-zinc-400 sm:text-base">
-          Multimodal agent with editable prompts, GraphQL RAG, safety checks, and
-          recommendation follow-ups — proving agents, RAG, workflow, APIs, and more.
-        </p>
+      <div className="relative overflow-hidden rounded-3xl border border-cyan-400/15 bg-gradient-to-br from-cyan-400/10 via-zinc-900/40 to-transparent p-6 sm:p-8">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-6 -top-8 size-40 rounded-full bg-cyan-400/20 blur-3xl nexus-glow-pulse"
+        />
+        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300/80">
+              Multimodal workbench
+            </p>
+            <h2 className="font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+              Analyze context. Ask anything.
+            </h2>
+            <p className="max-w-2xl text-sm leading-relaxed text-zinc-400 sm:text-base">
+              Multimodal agent with editable prompts, GraphQL RAG, safety checks, and
+              recommendation follow-ups — proving agents, RAG, workflow, APIs, and more.
+            </p>
+          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/mascot.png"
+            alt="Nexus Agent"
+            className="mx-auto h-28 w-28 rounded-3xl object-cover object-top ring-2 ring-cyan-300/40 shadow-[0_0_40px_rgba(34,211,238,0.35)] sm:mx-0 sm:h-32 sm:w-32"
+          />
+        </div>
       </div>
 
       <form onSubmit={onAnalyze} className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
@@ -174,7 +191,7 @@ export function AgentStudio() {
             <div>
               <button
                 type="button"
-                className="text-xs font-medium text-teal-300 hover:text-teal-200"
+                className="text-xs font-medium text-cyan-300 hover:text-cyan-200"
                 onClick={() => setShowPrompt((v) => !v)}
               >
                 {showPrompt ? "Hide" : "Edit"} system prompt (Prompt Engineering)
@@ -192,7 +209,7 @@ export function AgentStudio() {
               type="submit"
               size="lg"
               disabled={loading || !question.trim()}
-              className="h-11 w-full bg-teal-400 text-zinc-950 hover:bg-teal-300"
+              className="h-11 w-full bg-cyan-300 text-zinc-950 shadow-[0_0_28px_rgba(34,211,238,0.35)] hover:bg-cyan-200"
             >
               {loading ? (
                 <>
@@ -226,7 +243,7 @@ export function AgentStudio() {
                   <ThumbsDown className="size-3.5" /> Needs work
                 </Button>
               </div>
-              {feedbackNote ? <p className="text-xs text-teal-300">{feedbackNote}</p> : null}
+              {feedbackNote ? <p className="text-xs text-cyan-300">{feedbackNote}</p> : null}
 
               {result.recommendations?.length ? (
                 <div className="rounded-xl border border-white/10 bg-black/25 p-3">

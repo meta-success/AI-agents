@@ -49,7 +49,7 @@ export function NlpStudio() {
           className="mb-4 min-h-40 border-white/10 bg-black/30"
           placeholder="Paste a paragraph for linguistic analysis…"
         />
-        <Button onClick={run} disabled={loading || !text.trim()} className="bg-teal-400 text-zinc-950 hover:bg-teal-300">
+        <Button onClick={run} disabled={loading || !text.trim()} className="bg-cyan-400 text-zinc-950 hover:bg-cyan-300">
           {loading ? <Loader2 className="size-4 animate-spin" /> : null}
           Run NLP
         </Button>

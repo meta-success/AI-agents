@@ -52,7 +52,7 @@ export function GenerateStudio() {
           onChange={(e) => setPrompt(e.target.value)}
           className="mb-4 min-h-36 border-white/10 bg-black/30"
         />
-        <Button onClick={run} disabled={loading || !prompt.trim()} className="bg-teal-400 text-zinc-950 hover:bg-teal-300">
+        <Button onClick={run} disabled={loading || !prompt.trim()} className="bg-cyan-400 text-zinc-950 hover:bg-cyan-300">
           {loading ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
           Generate image
         </Button>

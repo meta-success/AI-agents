@@ -40,7 +40,7 @@ export function FinetuneStudio() {
       description="Convert annotations + RLHF preferences into OpenAI-style JSONL."
       className="max-w-4xl"
       action={
-        <Button onClick={download} disabled={!preview} className="bg-teal-400 text-zinc-950 hover:bg-teal-300">
+        <Button onClick={download} disabled={!preview} className="bg-cyan-400 text-zinc-950 hover:bg-cyan-300">
           <Download className="size-4" /> Download JSONL
         </Button>
       }

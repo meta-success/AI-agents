@@ -56,7 +56,7 @@ export function AnnotateStudio() {
           onChange={(e) => setNotes(e.target.value)}
           className="mb-4 h-10 border-white/10 bg-black/30"
         />
-        <Button onClick={add} className="bg-teal-400 text-zinc-950 hover:bg-teal-300">
+        <Button onClick={add} className="bg-cyan-400 text-zinc-950 hover:bg-cyan-300">
           Save annotation
         </Button>
       </Panel>
@@ -68,7 +68,7 @@ export function AnnotateStudio() {
             rows.map((r) => (
               <div key={r.id} className="rounded-xl border border-white/10 bg-black/25 p-3 text-sm">
                 <div className="mb-1 flex items-center justify-between gap-2">
-                  <span className="rounded-full bg-teal-400/15 px-2 py-0.5 text-xs text-teal-200">
+                  <span className="rounded-full bg-cyan-400/15 px-2 py-0.5 text-xs text-cyan-200">
                     {r.label}
                   </span>
                   <Button

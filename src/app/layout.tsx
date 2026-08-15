@@ -17,6 +17,10 @@ export const metadata: Metadata = {
   title: "Nexus Agent | AI Skill Workbench",
   description:
     "Production AI dashboard covering NLP, vision, speech, RAG, agents, RLHF, fine-tuning, safety, and more.",
+  icons: {
+    icon: [{ url: "/mascot.png", type: "image/png" }],
+    apple: [{ url: "/mascot.png", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -25,7 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`dark ${display.variable} ${sans.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-zinc-950 font-sans text-zinc-100">
+      <body className="min-h-full flex flex-col bg-[#05070d] font-sans text-zinc-100">
         {children}
       </body>
     </html>

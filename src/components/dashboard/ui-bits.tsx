@@ -19,11 +19,15 @@ export function Panel({
   return (
     <section
       className={cn(
-        "rounded-2xl border border-white/[0.08] bg-zinc-900/55 p-5 shadow-[0_0_0_1px_rgba(255,255,255,0.02)_inset] backdrop-blur-xl sm:p-6",
+        "relative overflow-hidden rounded-2xl border border-white/[0.08] bg-zinc-900/60 p-5 shadow-[0_0_0_1px_rgba(34,211,238,0.04)_inset,0_20px_50px_rgba(0,0,0,0.25)] backdrop-blur-xl sm:p-6",
         className
       )}
     >
-      <div className="mb-4 flex items-start justify-between gap-3">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-10 -top-10 size-36 rounded-full bg-cyan-400/10 blur-3xl"
+      />
+      <div className="relative mb-4 flex items-start justify-between gap-3">
         <div>
           <h2 className="font-[family-name:var(--font-display)] text-lg font-semibold tracking-tight text-white">
             {title}
@@ -34,7 +38,7 @@ export function Panel({
         </div>
         {action}
       </div>
-      {children}
+      <div className="relative">{children}</div>
     </section>
   );
 }
@@ -49,7 +53,7 @@ export function ResultBox({
   return (
     <div
       className={cn(
-        "whitespace-pre-wrap rounded-xl border border-white/[0.08] bg-black/35 p-4 text-sm leading-relaxed text-zinc-200",
+        "whitespace-pre-wrap rounded-xl border border-cyan-400/10 bg-black/40 p-4 text-sm leading-relaxed text-zinc-200",
         className
       )}
     >
@@ -60,7 +64,7 @@ export function ResultBox({
 
 export function EmptyState({ label }: { label: string }) {
   return (
-    <div className="rounded-xl border border-dashed border-white/10 bg-black/20 px-4 py-12 text-center text-sm text-zinc-500">
+    <div className="rounded-xl border border-dashed border-cyan-400/20 bg-cyan-400/[0.03] px-4 py-12 text-center text-sm text-zinc-500">
       {label}
     </div>
   );
@@ -68,8 +72,8 @@ export function EmptyState({ label }: { label: string }) {
 
 export function LoadingBlock({ label }: { label: string }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-xl border border-white/10 bg-black/20 px-4 py-12">
-      <Loader2 className="size-7 animate-spin text-teal-300" />
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-cyan-400/15 bg-black/25 px-4 py-12">
+      <Loader2 className="size-7 animate-spin text-cyan-300" />
       <p className="text-sm text-zinc-400">{label}</p>
     </div>
   );

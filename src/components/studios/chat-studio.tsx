@@ -54,7 +54,7 @@ export function ChatStudio() {
             key={`${m.role}-${i}`}
             className={
               m.role === "user"
-                ? "ml-8 rounded-xl bg-teal-400/15 px-3 py-2 text-sm text-teal-50"
+                ? "ml-8 rounded-xl bg-cyan-400/15 px-3 py-2 text-sm text-cyan-50"
                 : "mr-8 rounded-xl bg-white/[0.04] px-3 py-2 text-sm text-zinc-200"
             }
           >
@@ -71,7 +71,7 @@ export function ChatStudio() {
           placeholder="Type a message…"
           className="h-10 border-white/10 bg-black/30"
         />
-        <Button onClick={send} disabled={loading} className="bg-teal-400 text-zinc-950 hover:bg-teal-300">
+        <Button onClick={send} disabled={loading} className="bg-cyan-400 text-zinc-950 hover:bg-cyan-300">
           {loading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
         </Button>
       </div>

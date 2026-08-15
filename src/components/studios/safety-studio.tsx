@@ -53,7 +53,7 @@ export function SafetyStudio() {
           onChange={(e) => setText(e.target.value)}
           className="mb-4 min-h-40 border-white/10 bg-black/30"
         />
-        <Button onClick={run} disabled={loading || !text.trim()} className="bg-teal-400 text-zinc-950 hover:bg-teal-300">
+        <Button onClick={run} disabled={loading || !text.trim()} className="bg-cyan-400 text-zinc-950 hover:bg-cyan-300">
           {loading ? <Loader2 className="size-4 animate-spin" /> : <Shield className="size-4" />}
           Run safety scan
         </Button>

@@ -43,7 +43,7 @@ function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-white/10 bg-black/30 px-3 py-3">
       <p className="text-[11px] uppercase tracking-wide text-zinc-500">{label}</p>
-      <p className="mt-1 font-[family-name:var(--font-display)] text-lg text-teal-200">{value}</p>
+      <p className="mt-1 font-[family-name:var(--font-display)] text-lg text-cyan-200">{value}</p>
     </div>
   );
 }

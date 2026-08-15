@@ -36,7 +36,7 @@ export function AlignStudio() {
         <Textarea value={chosen} onChange={(e) => setChosen(e.target.value)} className="mb-3 min-h-20 border-white/10 bg-black/30" />
         <FieldLabel>Rejected answer</FieldLabel>
         <Textarea value={rejected} onChange={(e) => setRejected(e.target.value)} className="mb-4 min-h-20 border-white/10 bg-black/30" />
-        <Button onClick={addPair} className="bg-teal-400 text-zinc-950 hover:bg-teal-300">
+        <Button onClick={addPair} className="bg-cyan-400 text-zinc-950 hover:bg-cyan-300">
           Save preference pair
         </Button>
       </Panel>
@@ -47,7 +47,7 @@ export function AlignStudio() {
             {prefs.map((p) => (
               <div key={p.id} className="rounded-xl border border-white/10 bg-black/25 p-3">
                 <p className="text-zinc-400">{p.prompt}</p>
-                <p className="mt-1 text-teal-200">✓ {p.chosen}</p>
+                <p className="mt-1 text-cyan-200">✓ {p.chosen}</p>
                 <p className="text-red-300/80">✗ {p.rejected}</p>
               </div>
             ))}
