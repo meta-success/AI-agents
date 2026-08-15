@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Loader2, Send, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,11 +20,22 @@ export function ChatStudio() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  function scrollToBottom(behavior: ScrollBehavior = "smooth") {
+    const el = listRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior });
+  }
+
+  // Keep newest messages visible inside the chat box (not the page)
+  useLayoutEffect(() => {
+    scrollToBottom(messages.length <= 2 ? "auto" : "smooth");
+  }, [messages, loading, error]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+    scrollToBottom("auto");
+  }, []);
 
   async function send() {
     if (!input.trim() || loading) return;
@@ -33,6 +44,10 @@ export function ChatStudio() {
     setInput("");
     setLoading(true);
     setError(null);
+
+    // Instant scroll after user message paints
+    requestAnimationFrame(() => scrollToBottom("smooth"));
+
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -49,10 +64,17 @@ export function ChatStudio() {
     }
   }
 
+  function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      void send();
+    }
+  }
+
   return (
-    <section className="mx-auto max-w-3xl overflow-hidden rounded-3xl border border-cyan-400/15 bg-zinc-950/70 shadow-[0_0_0_1px_rgba(34,211,238,0.05)_inset,0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-      {/* Header */}
-      <div className="relative flex items-center gap-3 border-b border-cyan-400/10 px-5 py-4">
+    <section className="mx-auto flex h-[min(720px,calc(100vh-11rem))] w-full max-w-3xl flex-col overflow-hidden rounded-3xl border border-cyan-400/15 bg-zinc-950/70 shadow-[0_0_0_1px_rgba(34,211,238,0.05)_inset,0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+      {/* Header — fixed */}
+      <div className="relative flex shrink-0 items-center gap-3 border-b border-cyan-400/10 px-5 py-4">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-gradient-to-r from-cyan-400/10 via-transparent to-fuchsia-400/5"
@@ -83,8 +105,11 @@ export function ChatStudio() {
         <Sparkles className="relative size-4 text-cyan-300/70" />
       </div>
 
-      {/* Messages */}
-      <div className="max-h-[460px] space-y-4 overflow-y-auto bg-[radial-gradient(ellipse_at_top,_rgba(34,211,238,0.06),_transparent_55%)] px-4 py-5 sm:px-5">
+      {/* Messages — fixed height area, scrolls inside */}
+      <div
+        ref={listRef}
+        className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain bg-[radial-gradient(ellipse_at_top,_rgba(34,211,238,0.06),_transparent_55%)] px-4 py-5 sm:px-5"
+      >
         {messages.map((m, i) => (
           <div
             key={`${m.role}-${i}`}
@@ -106,7 +131,7 @@ export function ChatStudio() {
             ) : null}
             <div
               className={cn(
-                "max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm",
+                "max-w-[82%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm",
                 m.role === "user"
                   ? "rounded-br-md bg-gradient-to-br from-cyan-400 to-sky-400 text-zinc-950"
                   : "rounded-bl-md border border-white/10 bg-white/[0.05] text-zinc-100"
@@ -135,42 +160,42 @@ export function ChatStudio() {
             </div>
           </div>
         ) : null}
-        <div ref={bottomRef} />
       </div>
 
-      {/* Error */}
-      {error ? (
-        <div className="mx-4 mb-3 rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2.5 text-xs leading-relaxed text-red-100 sm:mx-5">
-          {error}
+      {/* Error + composer — fixed at bottom */}
+      <div className="shrink-0 border-t border-cyan-400/10 bg-black/30">
+        {error ? (
+          <div className="mx-4 mt-3 rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2.5 text-xs leading-relaxed text-red-100 sm:mx-5">
+            {error}
+          </div>
+        ) : null}
+        <div className="p-4 sm:p-5">
+          <div className="flex items-center gap-2 rounded-2xl border border-cyan-400/20 bg-zinc-900/80 p-1.5 shadow-[0_0_24px_rgba(34,211,238,0.08)] focus-within:border-cyan-300/40">
+            <Input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={onKeyDown}
+              placeholder="Message Nexus Chat…"
+              className="h-10 border-0 bg-transparent shadow-none focus-visible:ring-0"
+            />
+            <Button
+              type="button"
+              onClick={() => void send()}
+              disabled={loading || !input.trim()}
+              size="icon"
+              className="size-10 shrink-0 rounded-xl bg-cyan-300 text-zinc-950 shadow-[0_0_20px_rgba(34,211,238,0.35)] hover:bg-cyan-200"
+            >
+              {loading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Send className="size-4" />
+              )}
+            </Button>
+          </div>
+          <p className="mt-3 text-center text-[11px] text-zinc-600">
+            Skill proof: Conversational AI / Chatbots + NLP
+          </p>
         </div>
-      ) : null}
-
-      {/* Composer */}
-      <div className="border-t border-cyan-400/10 bg-black/30 p-4 sm:p-5">
-        <div className="flex items-center gap-2 rounded-2xl border border-cyan-400/20 bg-zinc-900/80 p-1.5 shadow-[0_0_24px_rgba(34,211,238,0.08)] focus-within:border-cyan-300/40">
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && send()}
-            placeholder="Message Nexus Chat…"
-            className="h-10 border-0 bg-transparent shadow-none focus-visible:ring-0"
-          />
-          <Button
-            onClick={send}
-            disabled={loading || !input.trim()}
-            size="icon"
-            className="size-10 shrink-0 rounded-xl bg-cyan-300 text-zinc-950 shadow-[0_0_20px_rgba(34,211,238,0.35)] hover:bg-cyan-200"
-          >
-            {loading ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <Send className="size-4" />
-            )}
-          </Button>
-        </div>
-        <p className="mt-3 text-center text-[11px] text-zinc-600">
-          Skill proof: Conversational AI / Chatbots + NLP
-        </p>
       </div>
     </section>
   );
