@@ -62,11 +62,10 @@ const STUDIO_ICONS: Record<StudioId, LucideIcon> = {
   guide: BookOpen,
 };
 
-const GROUPS: { id: Studio["group"]; label: string }[] = [
+const GROUPS: { id: "core" | "create" | "train"; label: string }[] = [
   { id: "core", label: "Core AI" },
   { id: "create", label: "Create & Analyze" },
   { id: "train", label: "Train & Align" },
-  { id: "map", label: "Help" },
 ];
 
 type Studio = (typeof STUDIOS)[number];
@@ -83,13 +82,14 @@ export function DashboardApp() {
   }, []);
 
   const active = STUDIOS.find((s) => s.id === studio)!;
+  const guideStudio = STUDIOS.find((s) => s.id === "guide")!;
+  const skillsStudio = STUDIOS.find((s) => s.id === "skills")!;
 
-  function NavButton({ s }: { s: Studio }) {
+  function NavButton({ s, featured }: { s: Studio; featured?: boolean }) {
     const Icon = STUDIO_ICONS[s.id];
     const selected = studio === s.id;
     return (
       <button
-        key={s.id}
         type="button"
         onClick={() => {
           setStudio(s.id);
@@ -97,6 +97,7 @@ export function DashboardApp() {
         }}
         className={cn(
           "group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl px-3 py-2.5 text-left transition-all duration-300",
+          featured && !selected && "border border-cyan-400/20 bg-cyan-400/[0.06]",
           selected
             ? "bg-gradient-to-r from-cyan-400/20 via-sky-400/10 to-transparent text-white shadow-[0_0_24px_rgba(34,211,238,0.12)]"
             : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100"
@@ -108,7 +109,7 @@ export function DashboardApp() {
         <span
           className={cn(
             "flex size-9 shrink-0 items-center justify-center rounded-xl border transition-all duration-300",
-            selected
+            selected || featured
               ? "border-cyan-300/40 bg-cyan-400/15 text-cyan-200 shadow-[0_0_16px_rgba(34,211,238,0.35)]"
               : "border-white/8 bg-white/[0.03] text-zinc-500 group-hover:border-cyan-400/20 group-hover:text-cyan-200"
           )}
@@ -196,6 +197,14 @@ export function DashboardApp() {
 
         <ScrollArea className="min-h-0 flex-1 px-3 py-4">
           <nav className="space-y-5">
+            {/* Guide pinned at top — single entry */}
+            <div>
+              <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-600">
+                Start here
+              </p>
+              <NavButton s={guideStudio} featured />
+            </div>
+
             {GROUPS.map((group) => (
               <div key={group.id}>
                 <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-600">
@@ -208,64 +217,19 @@ export function DashboardApp() {
                 </div>
               </div>
             ))}
+
+            {/* Skills once at bottom of nav */}
+            <div>
+              <p className="mb-2 px-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-600">
+                Coverage
+              </p>
+              <NavButton s={skillsStudio} />
+            </div>
           </nav>
         </ScrollArea>
 
-        <div className="space-y-3 border-t border-cyan-400/10 p-3">
-          <button
-            type="button"
-            onClick={() => {
-              setStudio("guide");
-              setMobileNav(false);
-            }}
-            className={cn(
-              "relative w-full overflow-hidden rounded-2xl border p-3 text-left transition-all duration-300",
-              studio === "guide"
-                ? "border-cyan-300/40 bg-cyan-400/10 shadow-[0_0_28px_rgba(34,211,238,0.2)]"
-                : "border-white/10 bg-gradient-to-br from-white/[0.05] to-cyan-400/[0.04] hover:border-cyan-300/30"
-            )}
-          >
-            <div className="flex items-center gap-2.5">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-cyan-400/15 text-cyan-200 ring-1 ring-cyan-300/30">
-                <BookOpen className="size-4" />
-              </span>
-              <div>
-                <p className="text-sm font-semibold text-white">Test Guide</p>
-                <p className="text-[11px] text-zinc-500">Examples · expected outputs</p>
-              </div>
-            </div>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setStudio("skills");
-              setMobileNav(false);
-            }}
-            className={cn(
-              "relative w-full overflow-hidden rounded-2xl border p-3 text-left transition-all duration-300",
-              studio === "skills"
-                ? "border-cyan-300/40 bg-cyan-400/10 shadow-[0_0_28px_rgba(34,211,238,0.2)]"
-                : "border-white/10 bg-gradient-to-br from-white/[0.05] to-cyan-400/[0.04] hover:border-cyan-300/30"
-            )}
-          >
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2.5">
-                <span className="flex size-9 items-center justify-center rounded-xl bg-cyan-400/15 text-cyan-200 ring-1 ring-cyan-300/30">
-                  <LayoutGrid className="size-4" />
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-white">Skills map</p>
-                  <p className="text-[11px] text-zinc-500">20 / 20 Rework proofs</p>
-                </div>
-              </div>
-              <Badge className="border-0 bg-cyan-300 text-[10px] font-bold text-zinc-950 hover:bg-cyan-300">
-                {SKILLS.length}
-              </Badge>
-            </div>
-          </button>
-
-          <div className="flex items-center gap-2 rounded-xl px-2 py-1 text-xs text-zinc-500">
+        <div className="border-t border-cyan-400/10 p-4">
+          <div className="flex items-center gap-2 text-xs text-zinc-500">
             <Activity
               className={cn(
                 "size-3.5",

@@ -157,6 +157,13 @@ export type Studio = {
 
 export const STUDIOS: Studio[] = [
   {
+    id: "guide",
+    label: "Guide",
+    description: "Purpose & how to test",
+    skills: [],
+    group: "map",
+  },
+  {
     id: "agent",
     label: "Agent",
     description: "Multimodal RAG agent",
@@ -251,13 +258,6 @@ export const STUDIOS: Studio[] = [
     id: "skills",
     label: "Skills",
     description: "Coverage map",
-    skills: [],
-    group: "map",
-  },
-  {
-    id: "guide",
-    label: "Guide",
-    description: "Purpose & step tests",
     skills: [],
     group: "map",
   },
